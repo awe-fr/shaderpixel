@@ -27,6 +27,8 @@ int main (void) {
 	// test
 	while (App->isClosed() == false) {
 		//test
+		App->deltaTime();
+		player->computeMovement(App->getWindow(), App->getDeltaTime());
 		glBindVertexArray(VAO);
 		// 1 time needed ?
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);

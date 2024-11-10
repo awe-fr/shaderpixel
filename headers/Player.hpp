@@ -5,12 +5,15 @@
 
 class Player {
 	private:
-		glm::mat4	projection;
-		glm::mat4	view;
+		glm::mat4	_projection;
+		glm::mat4	_view;
+		
 	public:
 		Player();
-		glm::mat4 getProjection();
-		glm::mat4 getView();
+		void	computeMovement(GLFWwindow *window, float deltaTime);
+		glm::mat4	getProjection();
+		glm::mat4	getView();
+		
 };
 
 #endif

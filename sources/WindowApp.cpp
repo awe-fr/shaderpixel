@@ -34,6 +34,7 @@ WindowApp::WindowApp() : _window(NULL) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glfwSwapBuffers(this->_window);
 	glfwPollEvents();
+	deltaTime();
 }
 
 WindowApp::~WindowApp() {
@@ -53,4 +54,20 @@ bool WindowApp::isClosed() {
 	glfwPollEvents();
 
 	return (false);
+}
+
+void WindowApp::deltaTime() {
+	static double last = glfwGetTime();
+
+	double now = glfwGetTime();
+	this->_deltaTime = (now - last);
+	last = now;
+}
+
+double WindowApp::getDeltaTime() {
+	return (this->_deltaTime);
+}
+
+GLFWwindow *WindowApp::getWindow() {
+	return (this->_window);
 }

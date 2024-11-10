@@ -6,11 +6,16 @@
 class WindowApp {
 	private:
 		GLFWwindow *_window;
+		double	_deltaTime;
 	public:
 		WindowApp();
 		~WindowApp();
 
-		bool isClosed();
+		bool	isClosed();
+		void	deltaTime();
+
+		double	getDeltaTime();
+		GLFWwindow	*getWindow();
 };
 
 #endif
