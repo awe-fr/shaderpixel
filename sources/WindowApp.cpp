@@ -47,8 +47,10 @@ bool WindowApp::isClosed() {
 	if (glfwGetKey(this->_window, GLFW_KEY_ESCAPE) == GLFW_PRESS || glfwWindowShouldClose(this->_window) != 0) {
 		return (true);
 	}
-	glClear(GL_COLOR_BUFFER_BIT);
 	glfwSwapBuffers(this->_window);
+	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glfwPollEvents();
+
 	return (false);
 }
