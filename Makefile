@@ -4,6 +4,7 @@ SRCS = sources/main.cpp\
 		sources/WindowApp.cpp\
 		sources/ShaderLoader.cpp\
 		sources/Player.cpp\
+		sources/Object.cpp\
 
 OBJS = $(SRCS:.cpp=.o)
 
