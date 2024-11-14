@@ -24,8 +24,14 @@ class Object {
 		size_t	getIBOSize();
 		bool	parseModel(const char *path);
 		bool	subParseModel(std::string line, std::vector<std::string> cut_line);
+
+		class wrongInit : public std::exception {
+			public:
+				virtual const char *what() const throw();
+		};
 };
 
-std::vector<std::string> split(std::string line, char cut);
+std::vector<std::string>	split(std::string line, char cut);
+Object	*askObject(const char *path);
 
 #endif

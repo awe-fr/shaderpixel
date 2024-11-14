@@ -1,7 +1,8 @@
 #include "./../headers/Object.hpp"
 
 Object::Object(const char *path) {
-	parseModel(path);
+	if (parseModel(path) == false)
+		throw wrongInit();
 
 	this->_model = glm::mat4(1);
 
@@ -147,7 +148,12 @@ size_t	Object::getIBOSize() {
 	return (this->_vertexIndex.size());
 }
 
-std::vector<std::string> split(std::string line, char cut) {
+const char *Object::wrongInit::what() const throw()
+{
+	return ("Init problem");
+}
+
+std::vector<std::string>	split(std::string line, char cut) {
 	std::vector<std::string> ret;
 	std::string new_line;
 	for (int i = 0; i < line.length(); i++) {
@@ -163,4 +169,14 @@ std::vector<std::string> split(std::string line, char cut) {
 	if (new_line != "\n" && new_line != "\r")
 		ret.push_back(new_line);
 	return (ret);
+}
+
+Object	*askObject(const char *path) {
+	try {
+		Object	*obj = new Object(path);
+		return (obj);
+	}
+	catch (std::exception &e) {
+		return (nullptr);
+	}
 }

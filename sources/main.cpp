@@ -4,11 +4,9 @@ int main (void) {
 	WindowApp *App = new WindowApp();
 	Player *player = new Player();
 	// test
-	std::vector<glm::vec3> vertex;
-	vertex.push_back(glm::vec3 {-1.0f, -1.0f, 0.0f});
-	vertex.push_back(glm::vec3 {1.0f, -1.0f, 0.0f});
-	vertex.push_back(glm::vec3 {0.0f,  1.0f, 0.0f});
-	Object *obj = new Object("./models/skull.obj");
+	Object *obj = askObject("./models/skull.obj");
+	if (obj == nullptr)
+		return 0;
 
 	GLuint basicID = LoadShaders("./shaders/basic.vert", "./shaders/basic.frag");
 	glUseProgram(basicID);
