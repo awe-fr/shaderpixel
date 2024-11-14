@@ -12,12 +12,16 @@ Object::Object(const char *path) {
 	glBindBuffer(GL_ARRAY_BUFFER, this->_VBO);
 	glBufferData(GL_ARRAY_BUFFER, this->_vertexBuffer.size() * sizeof(glm::vec3), &this->_vertexBuffer[0], GL_STATIC_DRAW);
 	
+	glGenBuffers(1, &this->_IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->_IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->_vertexIndex.size() * sizeof(GLuint), &this->_vertexIndex[0], GL_STATIC_DRAW);
+
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 	// glDisableVertexAttribArray(0);
 
-	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }
 
 bool	Object::parseModel(const char *path) {
@@ -76,58 +80,51 @@ bool	Object::parseModel(const char *path) {
 				}
 			}
 			else if (cut_line[0] == "f" && (cut_line.size() == 4 || cut_line.size() == 5)) {
-				glm::vec3 vertTmp(0, 0, 0);
-				glm::vec3 textTmp(0, 0, 0);
-				glm::vec3 normTmp(0, 0, 0);
-				for(int i = 0; i < 3; i++) {
-					std::vector<std::string> infos = split(cut_line[i + 1], '/');
-					if (infos.size() != 3) {
-						std::cerr << "Error : Wrong index." << std::endl;
-						std::cerr << "	" << line << std::endl;
+				if(subParseModel(line, cut_line) == false)
+					return false;
+				if (cut_line.size() == 5) {
+					cut_line[2] = cut_line[3];
+					cut_line[3] = cut_line[4];
+					if(subParseModel(line, cut_line) == false)
 						return false;
-					}
-					try {
-						int vert = std::stoi(infos[0]);
-						int text = std::stoi(infos[1]);
-						int norm = std::stoi(infos[2]);
-						if (vert > 0 && vert <= this->_vertexBuffer.size() && text > 0 && text <= this->_textureBuffer.size() && norm > 0 && norm <= this->_normalBuffer.size()) {
-							if (i == 0) {
-								vertTmp.x = vert;
-								textTmp.x = text;
-								normTmp.x = norm;
-							}
-							else if (i == 1) {
-								vertTmp.y = vert;
-								textTmp.y = text;
-								normTmp.y = norm;
-							}
-							else {
-								vertTmp.z = vert;
-								textTmp.z = text;
-								normTmp.z = norm;
-							}
-						}
-						else {
-							std::cerr << "Error : Wrong index." << std::endl;
-							std::cerr << "	" << line << std::endl;
-							return false;
-						}
-					}
-					catch (std::exception &e) {
-						std::cerr << "Error : Wrong index." << std::endl;
-						std::cerr << "	" << line << std::endl;
-						return false;
-					}
 				}
-				this->_vertexIndex.push_back(vertTmp);
-				this->_textureIndex.push_back(textTmp);
-				this->_normalIndex.push_back(normTmp);
 			}
 		}
 	}
-
 	file.close();
-	return true;
+	return (true);
+}
+
+bool	Object::subParseModel(std::string line, std::vector<std::string> cut_line) {
+	for(int i = 0; i < 3; i++) {
+		std::vector<std::string> infos = split(cut_line[i + 1], '/');
+		if (infos.size() != 3) {
+			std::cerr << "Error : Wrong index." << std::endl;
+			std::cerr << "	" << line << std::endl;
+			return false;
+		}
+		try {
+			int vert = std::stoi(infos[0]);
+			int text = std::stoi(infos[1]);
+			int norm = std::stoi(infos[2]);
+			if (vert > 0 && vert <= this->_vertexBuffer.size() && text > 0 && text <= this->_textureBuffer.size() && norm > 0 && norm <= this->_normalBuffer.size()) {
+				this->_vertexIndex.push_back(vert - 1);
+				this->_textureIndex.push_back(text - 1);
+				this->_normalIndex.push_back(norm - 1);
+			}
+			else {
+				std::cerr << "Error : Wrong index." << std::endl;
+				std::cerr << "	" << line << std::endl;
+				return false;
+			}
+		}
+		catch (std::exception &e) {
+			std::cerr << "Error : Wrong index." << std::endl;
+			std::cerr << "	" << line << std::endl;
+			return false;
+		}
+	}
+	return (true);
 }
 
 GLuint	Object::getVAO() {
@@ -144,6 +141,10 @@ glm::mat4 Object::getModel() {
 
 size_t	Object::getVBOSize() {
 	return (this->_vertexBuffer.size());
+}
+
+size_t	Object::getIBOSize() {
+	return (this->_vertexIndex.size());
 }
 
 std::vector<std::string> split(std::string line, char cut) {
