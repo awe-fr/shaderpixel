@@ -12,6 +12,7 @@
 # include <glm/gtx/transform.hpp>
 
 // standard includes
+# include <exception>
 # include <iostream>
 # include <fstream>
 # include <sstream>

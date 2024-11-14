@@ -8,7 +8,7 @@ int main (void) {
 	vertex.push_back(glm::vec3 {-1.0f, -1.0f, 0.0f});
 	vertex.push_back(glm::vec3 {1.0f, -1.0f, 0.0f});
 	vertex.push_back(glm::vec3 {0.0f,  1.0f, 0.0f});
-	Object *obj = new Object(vertex);
+	Object *obj = new Object("./models/skull.obj");
 
 	GLuint basicID = LoadShaders("./shaders/basic.vert", "./shaders/basic.frag");
 	glUseProgram(basicID);
@@ -20,14 +20,14 @@ int main (void) {
 		//test
 		App->deltaTime();
 		player->computeMovement(App->getWindow(), App->getDeltaTime());
-		std::cout << (float)1 / App->getDeltaTime() << std::endl;
+		// std::cout << (float)1 / App->getDeltaTime() << std::endl;
 
 		glUniformMatrix4fv(ProjectionID, 1, GL_FALSE, &player->getProjection()[0][0]);
 		glUniformMatrix4fv(ViewID, 1, GL_FALSE, &player->getView()[0][0]);
 		glUniformMatrix4fv(ModelID, 1, GL_FALSE, &obj->getModel()[0][0]);
 
 		glBindVertexArray(obj->getVAO());
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, obj->getVBOSize());
 		glBindVertexArray(0);
 		//test
 	}
