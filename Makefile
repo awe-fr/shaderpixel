@@ -16,7 +16,14 @@ LDFLAGS = -Iinclude -Llib -lglfw -lGLEW -lGL -lX11 -lpthread -lXrandr -lXi -ldl 
 
 RM = rm -f
 
-all:			$(NAME)
+all:			image_load $(NAME)
+
+image_load:
+	if [ ! -f headers/stb_image.h ]; then \
+		git clone https://github.com/nothings/stb.git; \
+		cp stb/stb_image.h headers; \
+		rm -rf stb; \
+	fi
 
 $(NAME):		$(OBJS)
 				$(CC) $(OBJS) -o $(NAME) $(LDFLAGS)
@@ -28,6 +35,7 @@ clean:
 			$(RM) $(OBJS)
 			
 fclean:		clean
+			$(RM) headers/stb_image.h
 			$(RM) $(NAME)
 			
 re:			fclean all

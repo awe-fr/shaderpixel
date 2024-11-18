@@ -27,7 +27,7 @@ int main (void) {
 
 		glUniformMatrix4fv(ProjectionID, 1, GL_FALSE, &player->getProjection()[0][0]);
 		glUniformMatrix4fv(ViewID, 1, GL_FALSE, &player->getView()[0][0]);
-		glUniformMatrix4fv(ModelID, 1, GL_FALSE, &obj->getModel()[0][0]);
+		glUniformMatrix4fv(ModelID, 1, GL_FALSE, &(glm::rotate((obj->getModel() * glm::translate(glm::vec3(0, -15, -30))), glm::radians(-90.0f), glm::vec3(1, 0, 0)))[0][0]);
 
 		glBindVertexArray(obj->getVAO());
 		glDrawElements(GL_TRIANGLES, obj->getIBOSize(), GL_UNSIGNED_INT, (void *)0);

@@ -143,7 +143,7 @@ bool	Object::subParseModel(std::string line, std::vector<std::string> cut_line) 
 int	Object::isExist(glm::vec3 Cpos, glm::vec2 Ctex, glm::vec3 Cnorm) {
 	if (!this->_VBOBuffer.empty()) {
 		for(int i = this->_VBOBuffer.size() - 1; i >= 0; i--) {
-			if (this->_VBOBuffer[i].pos == Cpos) {
+			if (this->_VBOBuffer[i].pos == Cpos && this->_VBOBuffer[i].tex == Ctex && this->_VBOBuffer[i].norm == Cnorm) {
 				return (i);
 			}
 		}
