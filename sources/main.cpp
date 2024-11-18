@@ -23,7 +23,7 @@ int main (void) {
 		//test
 		App->deltaTime();
 		player->computeMovement(App->getWindow(), App->getDeltaTime());
-		std::cout << (float)1 / App->getDeltaTime() << std::endl;
+		// std::cout << (float)1 / App->getDeltaTime() << std::endl;
 
 		glUniformMatrix4fv(ProjectionID, 1, GL_FALSE, &player->getProjection()[0][0]);
 		glUniformMatrix4fv(ViewID, 1, GL_FALSE, &player->getView()[0][0]);

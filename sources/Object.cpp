@@ -11,15 +11,20 @@ Object::Object(const char *path) {
 
 	glGenBuffers(1, &this->_VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, this->_VBO);
-	glBufferData(GL_ARRAY_BUFFER, this->_vertexBuffer.size() * sizeof(glm::vec3), &this->_vertexBuffer[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->_VBOBuffer.size() * sizeof(Vertex), this->_VBOBuffer.data(), GL_STATIC_DRAW);
 	
 	glGenBuffers(1, &this->_IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->_IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->_vertexIndex.size() * sizeof(GLuint), &this->_vertexIndex[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->_IBOBuffer.size() * sizeof(GLuint), this->_IBOBuffer.data(), GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	// glDisableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, pos));
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex));
+
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, norm));
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -109,9 +114,16 @@ bool	Object::subParseModel(std::string line, std::vector<std::string> cut_line) 
 			int text = std::stoi(infos[1]);
 			int norm = std::stoi(infos[2]);
 			if (vert > 0 && vert <= this->_vertexBuffer.size() && text > 0 && text <= this->_textureBuffer.size() && norm > 0 && norm <= this->_normalBuffer.size()) {
-				this->_vertexIndex.push_back(vert - 1);
-				this->_textureIndex.push_back(text - 1);
-				this->_normalIndex.push_back(norm - 1);
+				int tmp = isExist(this->_vertexBuffer[vert - 1], this->_textureBuffer[text - 1], this->_normalBuffer[norm -1]);
+
+				if (tmp == -1) {
+					this->_IBOBuffer.push_back(this->_VBOBuffer.size());
+					this->_VBOBuffer.push_back({this->_vertexBuffer[vert - 1], this->_textureBuffer[text - 1], this->_normalBuffer[norm - 1]});
+				}
+				else {
+					this->_IBOBuffer.push_back(tmp);
+				}
+			
 			}
 			else {
 				std::cerr << "Error : Wrong index." << std::endl;
@@ -128,6 +140,17 @@ bool	Object::subParseModel(std::string line, std::vector<std::string> cut_line) 
 	return (true);
 }
 
+int	Object::isExist(glm::vec3 Cpos, glm::vec2 Ctex, glm::vec3 Cnorm) {
+	if (!this->_VBOBuffer.empty()) {
+		for(int i = this->_VBOBuffer.size() - 1; i >= 0; i--) {
+			if (this->_VBOBuffer[i].pos == Cpos) {
+				return (i);
+			}
+		}
+	}
+	return (-1);
+}
+
 GLuint	Object::getVAO() {
 	return (this->_VAO);
 }
@@ -141,11 +164,11 @@ glm::mat4 Object::getModel() {
 }
 
 size_t	Object::getVBOSize() {
-	return (this->_vertexBuffer.size());
+	return (this->_VBOBuffer.size());
 }
 
 size_t	Object::getIBOSize() {
-	return (this->_vertexIndex.size());
+	return (this->_IBOBuffer.size());
 }
 
 const char *Object::wrongInit::what() const throw()

@@ -13,7 +13,6 @@ class Player {
 		void	computeMovement(GLFWwindow *window, float deltaTime);
 		glm::mat4	getProjection();
 		glm::mat4	getView();
-		
 };
 
 #endif
