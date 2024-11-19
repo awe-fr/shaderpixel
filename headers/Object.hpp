@@ -16,6 +16,7 @@ class Object {
 		GLuint	_VAO;
 		GLuint	_VBO;
 		GLuint	_IBO;
+		GLuint	_texture;
 
 		std::vector<glm::vec3>	_vertexBuffer;
 		std::vector<glm::vec2>	_textureBuffer;
@@ -28,15 +29,17 @@ class Object {
 		std::vector<Vertex> _VBOBuffer;
 		std::vector<GLuint>	_IBOBuffer;
 	public:
-		Object(const char *path);
+		Object(const char *path_obj, const char *path_text);
 		GLuint	getVAO();
 		GLuint	getVBO();
+		GLuint	getTexture();
 		glm::mat4 getModel();
 		size_t	getVBOSize();
 		size_t	getIBOSize();
 		int	isExist(glm::vec3 Cpos, glm::vec2 Ctex, glm::vec3 Cnorm);
 		bool	parseModel(const char *path);
 		bool	subParseModel(std::string line, std::vector<std::string> cut_line);
+		bool	parseTexture(const char *path);
 
 		class wrongInit : public std::exception {
 			public:
@@ -45,6 +48,6 @@ class Object {
 };
 
 std::vector<std::string>	split(std::string line, char cut);
-Object	*askObject(const char *path);
+Object	*askObject(const char *path_obj, const char *path_text);
 
 #endif

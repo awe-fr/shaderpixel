@@ -1,10 +1,16 @@
-#include "./../headers/Object.hpp"
+#define STB_IMAGE_IMPLEMENTATION
 
-Object::Object(const char *path) {
-	if (parseModel(path) == false)
+#include "./../headers/Object.hpp"
+#include "./../headers/stb_image.h"
+
+Object::Object(const char *path_obj, const char *path_text) {
+	this->_model = glm::mat4(1);
+
+	if (parseModel(path_obj) == false)
 		throw wrongInit();
 
-	this->_model = glm::mat4(1);
+	if (parseTexture(path_text) == false)
+		throw wrongInit();
 
 	glGenVertexArrays(1, &this->_VAO);
 	glBindVertexArray(this->_VAO);
@@ -26,8 +32,38 @@ Object::Object(const char *path) {
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, norm));
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// add singleton lst
+}
+
+bool	Object::parseTexture(const char *path) {
+	stbi_set_flip_vertically_on_load(1);
+	
+	int widthImg, heightImg, numColCh;
+	unsigned char *bytes = stbi_load(path, &widthImg, &heightImg, &numColCh, 0);
+	if (!bytes)
+		return (false);
+
+	glGenTextures(1, &this->_texture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, this->_texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, widthImg, heightImg, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	stbi_image_free(bytes);
+
+	return (true);
 }
 
 bool	Object::parseModel(const char *path) {
@@ -159,6 +195,10 @@ GLuint	Object::getVBO() {
 	return (this->_VBO);
 }
 
+GLuint	Object::getTexture() {
+	return (this->_texture);
+}
+
 glm::mat4 Object::getModel() {
 	return (this->_model);
 }
@@ -194,9 +234,9 @@ std::vector<std::string>	split(std::string line, char cut) {
 	return (ret);
 }
 
-Object	*askObject(const char *path) {
+Object	*askObject(const char *path_obj, const char *path_text) {
 	try {
-		Object	*obj = new Object(path);
+		Object	*obj = new Object(path_obj, path_text);
 		return (obj);
 	}
 	catch (std::exception &e) {

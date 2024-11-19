@@ -4,15 +4,19 @@ int main (void) {
 	WindowApp *App = new WindowApp();
 	Player *player = new Player();
 	// test
-	Object *obj = askObject("./models/skull.obj");
+	Object *obj = askObject("./models/skull.obj", "./models/skull.jpg");
 	if (obj == nullptr)
 		return 0;
 
 	GLuint basicID = LoadShaders("./shaders/basic.vert", "./shaders/basic.frag");
+
 	glUseProgram(basicID);
+
 	GLuint ProjectionID = glGetUniformLocation(basicID, "Projection");
 	GLuint ViewID = glGetUniformLocation(basicID, "View");
 	GLuint ModelID = glGetUniformLocation(basicID, "Model");
+
+	GLuint texture = glGetUniformLocation(basicID, "tex");
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -28,6 +32,10 @@ int main (void) {
 		glUniformMatrix4fv(ProjectionID, 1, GL_FALSE, &player->getProjection()[0][0]);
 		glUniformMatrix4fv(ViewID, 1, GL_FALSE, &player->getView()[0][0]);
 		glUniformMatrix4fv(ModelID, 1, GL_FALSE, &(glm::rotate((obj->getModel() * glm::translate(glm::vec3(0, -15, -30))), glm::radians(-90.0f), glm::vec3(1, 0, 0)))[0][0]);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, obj->getTexture());
+		glUniform1i(texture,0);
 
 		glBindVertexArray(obj->getVAO());
 		glDrawElements(GL_TRIANGLES, obj->getIBOSize(), GL_UNSIGNED_INT, (void *)0);
