@@ -3,10 +3,6 @@
 #include "./../headers/Object.hpp"
 #include "./../headers/stb_image.h"
 
-std::string value;
-std::mutex objacces;
-std::condition_variable alert;
-
 Object::Object(const char *path_obj, const char *path_text, short min_filter, short mag_filter, short wrap, bool flipped) {
 	this->_model = glm::mat4(1);
 
