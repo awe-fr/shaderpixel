@@ -3,10 +3,9 @@
 int main (void) {
 	WindowApp *App = new WindowApp();
 	Player *player = new Player();
+	ObjectList *objectlist = ObjectList::getInstance();
 	// test
-	Object *obj = askObject("./models/skull.obj", "./models/skull.jpg");
-	if (obj == nullptr)
-		return 0;
+	askObject("./models/skull.obj", "./models/skull.jpg", 1, 1, 4, 1);
 
 	GLuint basicID = LoadShaders("./shaders/basic.vert", "./shaders/basic.frag");
 
@@ -27,22 +26,25 @@ int main (void) {
 		//test
 		App->deltaTime();
 		player->computeMovement(App->getWindow(), App->getDeltaTime());
+		std::vector<Object *> objList = objectlist->getList();
 		// std::cout << (float)1 / App->getDeltaTime() << std::endl;
-
-		glUniformMatrix4fv(ProjectionID, 1, GL_FALSE, &player->getProjection()[0][0]);
-		glUniformMatrix4fv(ViewID, 1, GL_FALSE, &player->getView()[0][0]);
-		glUniformMatrix4fv(ModelID, 1, GL_FALSE, &(glm::rotate((obj->getModel() * glm::translate(glm::vec3(0, -15, -30))), glm::radians(-90.0f), glm::vec3(1, 0, 0)))[0][0]);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, obj->getTexture());
-		glUniform1i(texture,0);
-
-		glBindVertexArray(obj->getVAO());
-		glDrawElements(GL_TRIANGLES, obj->getIBOSize(), GL_UNSIGNED_INT, (void *)0);
-		glBindVertexArray(0);
 		//test
-	}
+		for (int objCount = objList.size() - 1; objCount >= 0; objCount--) {
+			glUniformMatrix4fv(ProjectionID, 1, GL_FALSE, &player->getProjection()[0][0]);
+			glUniformMatrix4fv(ViewID, 1, GL_FALSE, &player->getView()[0][0]);
+			glUniformMatrix4fv(ModelID, 1, GL_FALSE,  &objList[objCount]->getModel()[0][0]);
 
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, objList[objCount]->getTexture());
+			glUniform1i(texture,0);
+
+			glBindVertexArray(objList[objCount]->getVAO());
+			glDrawElements(GL_TRIANGLES, objList[objCount]->getIBOSize(), GL_UNSIGNED_INT, (void *)0);
+			glBindVertexArray(0);
+		}
+	}
+	objectlist->cleanup();
+	delete objectlist;
 	delete App;
 	return 0;
 }

@@ -1,7 +1,7 @@
 #ifndef OBJECT_HPP
 # define OBJECT_HPP
 
-#include "./main.h"
+# include "./main.h"
 
 struct Vertex {
 	glm::vec3 pos;
@@ -29,7 +29,7 @@ class Object {
 		std::vector<Vertex> _VBOBuffer;
 		std::vector<GLuint>	_IBOBuffer;
 	public:
-		Object(const char *path_obj, const char *path_text);
+		Object(const char *path_obj, const char *path_text, short min_filter, short mag_filter, short wrap, bool flipped);
 		GLuint	getVAO();
 		GLuint	getVBO();
 		GLuint	getTexture();
@@ -39,7 +39,7 @@ class Object {
 		int	isExist(glm::vec3 Cpos, glm::vec2 Ctex, glm::vec3 Cnorm);
 		bool	parseModel(const char *path);
 		bool	subParseModel(std::string line, std::vector<std::string> cut_line);
-		bool	parseTexture(const char *path);
+		bool	parseTexture(const char *path, short min_filter, short mag_filter, short wrap, bool flipped);
 
 		class wrongInit : public std::exception {
 			public:
@@ -48,6 +48,6 @@ class Object {
 };
 
 std::vector<std::string>	split(std::string line, char cut);
-Object	*askObject(const char *path_obj, const char *path_text);
+void	askObject(const char *path_obj, const char *path_text, short min_filter, short mag_filter, short wrap, bool flipped);
 
 #endif

@@ -12,14 +12,19 @@
 # include <glm/gtx/transform.hpp>
 
 // standard includes
+# include <condition_variable>
 # include <exception>
 # include <iostream>
 # include <fstream>
 # include <sstream>
+# include <cstring>
 # include <vector>
+# include <thread>
+# include <mutex>
 
 // file includes
 # include "./WindowApp.hpp"
+# include "./Singleton.hpp"
 # include "./Player.hpp"
 # include "./Object.hpp"
 

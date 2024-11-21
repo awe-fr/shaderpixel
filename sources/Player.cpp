@@ -93,5 +93,4 @@ void Player::computeMovement(GLFWwindow *window, float deltaTime) {
 	up = glm::cross(right, direction);
 
 	this->_view = glm::lookAt(position,position + direction, up);
-	// this->_view = viewMat(position, vecAddition(position, direction), up);
 }
